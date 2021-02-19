@@ -1,6 +1,5 @@
 # Raspberry Pi Automatically Report
 [![python](https://github.takahashi65.info/lib_badge/python.svg)](https://www.python.org/)
-[![python version](https://github.takahashi65.info/lib_badge/python-3.6.svg)](https://www.python.org/)
 [![rpi](https://github.takahashi65.info/lib_badge/raspberry-pi.svg)](https://www.raspberrypi.org/)
 [![UA](https://github.takahashi65.info/lib_badge/active_maintenance.svg)](https://github.com/Suzhou65/RaspberryPi-Automatically-Report)
 [![Size](https://github-size-badge.herokuapp.com/Suzhou65/RaspberryPi-Automatically-Report.svg)](https://github.com/axetroy/github-size-badge)
