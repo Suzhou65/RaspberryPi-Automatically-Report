@@ -8,18 +8,22 @@ Simply Python automatically report module working on Raspberry Pi.
 
 ## Contents
 - [Raspberry Pi Automatically Report](#raspberry-pi-automatically-report)
+  * [Contents](#contents)
   * [Usage](#usage)
-    + [Automatically running](#automatically-running)
+    + [Scheduling](#scheduling)
     + [Email sending](#email-sending)
     + [Temperature alert](#temperature-alert)
     + [IP address change detection](#ip-address-change-detection)
+    + [Program or process checking](#program-or-process-checking)
+  * [Configuration file](#configuration-file)
+  * [Modules instantiation](#modules-instantiation)
   * [Python module](#python-module)
-  * [Function](#python-module)
+  * [Function](#function)
     + [Temperature report](#temperature-report)
     + [Temperature high alert](#temperature-high-alert)
-    + [IPv4 address check](#ipv4-address-check)
     + [IP address check](#ip-address-check)
     + [Program Checker](#program-checker)
+    + [Error handling](#error-handling)
   * [Dependencies](#dependencies)
     + [Python version](#python-version)
     + [Python module](#python-module-1)
@@ -27,14 +31,25 @@ Simply Python automatically report module working on Raspberry Pi.
   * [Resources](#resources)
 
 ## Usage
-### Automatically running
-[![cron](https://github.takahashi65.info/lib_badge/cron-jobs.svg)](https://en.wikipedia.org/wiki/Cron)  
-Automatically execute via cron, recommend using crontab.
-  
-**For example:**  
-- coretemp_warning.py will automatically running every hours from 9:00 to 22:00.
-- ip_overwatch64.py will automatically running every hour.
+### Scheduling
+- Schedule  
+You can using schedule module for job scheduling, you can found the scheduling setting at scripts examples.
+```python
+import schedule
 
+#Execute setting
+schedule.every(30).minutes.do( #Something Package as function)
+#Loop
+try:
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+#Crtl+C to exit
+except KeyboardInterrupt:
+  print("GoodBye ...")
+```
+- Crontab  
+Alternatively, automatically execute via cron.
 ```shell
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -52,37 +67,86 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 47 6	* * 7	root	test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
 52 6	1 * *	root	test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
 0 9-22/1 * * *  pi python /home/pi/python_script/coretemp_warning.py
-0 */1   * * *   pi python /home/pi/python_script/ip_overwatch64.py
+0 */1   * * *   pi python /home/pi/python_script/ip_address_notice.py
 #
 ```
-
 ### Email sending
-Google account needed, sign in using App passwords.  
-If you know other mail service domain & port setting, it can be modify easy.
-```python
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-```
-- **sender_account** is the Google account for sending mail. 
-- **sender_password** is the App passwords.
-- **receiver** is the receiving address.
+- Google account needed, sign in using App passwords.
+- Receiver is unlimited.
+First time running email sending, it will asking configuration.
+```text
+Mail Configuration not found, please initialize.
 
+Please enter the sender account: example@gmail.com
+Please enter the sender password: •••••••••
+Please enter the receiver address: receiver@gmail.com
+```
+You can also set disalbe_phone_book to True, directly setting email configuration.
+```python
+#Email configuration Mode
+disalbe_phone_book = False
+
+#If set "disalbe_phone_book" True
+sender_account = "example@gmail.com"
+sender_password = "•••••••••"
+receiver_address = "receiver@gmail.com"
+```
 ### Temperature alert
-Critical value is necessary, can be integer or floating point.
-```python
-critical = 55
+Critical value is necessary, can be integer or floating point. Configure store at ```config.json```.
+```json
+"tempture_alert": {
+  "critical": 55.0
+  },
 ```
-- **critical** is the critical value, unit of temperature is degree celsius.
-
+The critical value, unit of temperature is ```degree celsius```.
 ### IP address change detection
-For initialization, default address is necessary.
-```python
-ipv4 = "1.1.1.1"
-ipv6 = "2606:4700:4700::1111"
+If default address is empty, it will fill in when initialization.
+```json
+"ip_address_alert": {
+  "ipv4": "1.1.1.1",
+  "ipv6": "2606:4700:4700::1111"
+  },
 ```
-- **ipv4** is the IPv4 address.
-- **ipv6** is the IPv6 address.
+### Program or process checking
+If default address is empty, it will print error message when initialization, or return ```True``` as result.
+```text
+Query not found. Configuration is necessary.
+```
+Configure store at ```config.json```.
+```json
+"program_checker": {
+  "program": ""
+  },
+```
+
+## Configuration file
+Status4HaH store configuration as JSON format file, named ```config.json.```.  
+You can editing the clean copy, which looks like this:
+```json
+{
+    "mail": {
+        "sender": "",
+        "scepter": "",
+        "receiver": ""
+    },
+    "tempture_alert": {
+        "critical": 55.0
+    },
+    "ip_address_alert": {
+        "ipv4": "",
+        "ipv6": ""
+    },
+    "program_checker": {
+        "program": ""
+    },
+    "last_update_time": ""
+}
+```
+If you fill in with correct configure, it will skip initialization step.
+
+## Modules instantiation
+If you want to using schedule module for job scheduling, install this module are needed.
+- [schedule](https://pypi.org/project/schedule/)
 
 ## Python module
 - Import the module
@@ -90,127 +154,99 @@ ipv6 = "2606:4700:4700::1111"
 import automatically_report
 ```
 ```python
-import automatically_report as automatically
+import automatically_report as auto
 ```
-
 - Alternatively, you can import the function independent
 ```python
-from automatically_report import temp_report
+from automatically_report import get_address
+
+get_address(mode_select=False)
 ```
 
 ## Function
 ### Temperature report
 ```python
-from automatically_report import temp_report
+import automatically_report
 
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-
-cpu_status =temp_report(sender_account, sender_password, receiver)
-print(cpu_status)
+temperature = automatically_report.cputemperature(float_mode=True)
 ```
-It will sending email and print CPU temperature as result.
-```text
-41
+If you enable ```float_mode```, it will return ```float```. otherwise it will return ```integer```
+Runnable script refer to ```coretemp_notice.py```. After sending email it will print.
 ```
-If error occurred, it will return error massage.
+2021-02-26 11:11:11 | Temperature report complete.
+```
 
 ### Temperature high alert
-```python
-from automatically_report import temp_warning
+Refer to ```coretemp_warning.py```.
 
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-critical = 55
-
-critical_level = temp_warning(sender_account, sender_password, receiver, critical)
-print(critical_level)
-```
-It will sending email if the CPU temperature higher then critical value. otherwise it will print:
+It will sending email if the CPU temperature higher then critical value.
 ```text
-Core temperature under critical value
+2021-02-26 11:11:19 | Temperature report complete.
 ```
-If error occurred, it will return error massage.
-
-### IPv4 address check
-```python
-from automatically_report import address_check_4
-
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-ipv4 = "1.1.1.1"
-
-check4 = address_check_4(sender_account, sender_password, receiver, ipv4)
-print(check4)
-```
-It will sending email if the IPv4 address change, otherwise it will print:
+Otherwise it will print:
 ```text
-IPv4 address no change.
+2021-02-26 11:11:31 | Core temperature under critical value.
 ```
-This function will also return the boolean of compare, and IP address by list as result.
-```python
-[True, True, '114.514.19.19']
-```
-If error occurred, it will return error massage.
 
 ### IP address check
-```python
-from automatically_report import address_check_64
+Refer to ```ip_address_notice.py```.
 
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-ipv4 = "1.1.1.1"
-ipv6 = "2606:4700:4700::1111"
+Configure the ```mode_select``` to select IPv4 only or IPv6 only.
+- If you set ```mode_select``` to ```IPv4```  
+Compare IPv4 only.
+- If you set ```mode_select``` to ```IPv6```  
+Compare IPv6 only.
 
-check64 = address_check_64(sender_account, sender_password, receiver, ipv4, ipv6)
-print(check64)
-```
-It will sending email if the IP address change, otherwise it will print:
+If address no change, it will print.
 ```text
-IP address no change
+2021-02-26 11:28:56 | No changes detected.
 ```
-This function will also return the boolean of compare, and IP address by list as result.
-```python
-[True, False, False, '114.514.19.19', '8930:8100:1145:141:919:36:114:514']
+If changes detected, depend on ```mode_select```, it will sending email and print.
+- IPv4 only
+```text
+2021-02-26 11:28:14 | 114.514.19.19
 ```
-If error occurred, it will return error massage.
+- IPv6 only
+```text
+2021-02-26 11:28:14 | 8930:8100:1145:141:919:36:114:514
+```
+- If ```mode_select``` is default (```False```)
+```text
+2021-02-26 11:28:14 | [True, False] | 1.1.1.1 | 8930:8100:1145:141:919:36:114:514
+```
+```False``` means that IPv6 has been change.
 
 ### Program Checker
-```python
-from automatically_report import program_checker
-
-sender_account = "midsummer@lewd.dream"
-sender_password = "3f7a9d18e117a65860"
-receiver = "kokosuki@lewd.dream"
-program = "HentaiAtHome.jar"
-
-ps_result = program_checker(sender_account, sender_password, receiver, program)
-print(ps_result)
+Refer to ```program_checker.py```.
+If the query program or process not found, it will sending email and print.
+```text
+2021-02-26 11:12:55 | Program not found.
+2021-02-26 11:12:55 | Status report complete.
 ```
-It will sending email if the program not found in list, otherwise it will print it, this function will return the result by list.
-```python
-['20552 Sl+ java-jarHentaiAtHome.jar']
+Otherwise it will print:
+```text
+2021-02-26 11:13:20 | Program found in process list.
 ```
-If error occurred, it will return error massage.
+
+### Error handling
+Error message store at ```error.log```
 
 ## Dependencies
 ### Python version
 - Python 3.6 or above
-
 ### Python module
 - os
-- subprocess
-- datetime
-- socket
-- requests
+- re
+- sys
 - json
-- smtplib
 - email
-- csv
+- socket
+- getpass
+- smtplib
+- logging
+- requests
+- datetime
+- subprocess
 
 ## License
 General Public License -3.0
