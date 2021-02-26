@@ -170,12 +170,12 @@ import automatically_report
 
 temperature = automatically_report.cputemperature(float_mode=True)
 ```
-If you enable ```float_mode```, it will return ```float```. otherwise it will return ```integer```
+If you enable ```float_mode```, it will return ```float```. otherwise it will return ```integer```.
+
 Runnable script refer to ```coretemp_notice.py```. After sending email it will print.
 ```
 2021-02-26 11:11:11 | Temperature report complete.
 ```
-
 ### Temperature high alert
 Refer to ```coretemp_warning.py```.
 
@@ -187,7 +187,6 @@ Otherwise it will print:
 ```text
 2021-02-26 11:11:31 | Core temperature under critical value.
 ```
-
 ### IP address check
 Refer to ```ip_address_notice.py```.
 
@@ -215,7 +214,6 @@ If changes detected, depend on ```mode_select```, it will sending email and prin
 2021-02-26 11:28:14 | [True, False] | 1.1.1.1 | 8930:8100:1145:141:919:36:114:514
 ```
 ```False``` means that IPv6 has been change.
-
 ### Program Checker
 Refer to ```program_checker.py```.
 If the query program or process not found, it will sending email and print.
@@ -227,7 +225,6 @@ Otherwise it will print:
 ```text
 2021-02-26 11:13:20 | Program found in process list.
 ```
-
 ### Error handling
 Error message store at ```error.log```
 
