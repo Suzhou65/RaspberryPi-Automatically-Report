@@ -1,0 +1,18 @@
+{
+    "mail": {
+        "sender": "",
+        "scepter": "",
+        "receiver": ""
+    },
+    "tempture_alert": {
+        "critical": 55.0
+    },
+    "ip_address_alert": {
+        "ipv4": "",
+        "ipv6": ""
+    },
+    "program_checker": {
+        "program": ""
+    },
+    "last_update_time": ""
+}
