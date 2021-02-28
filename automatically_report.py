@@ -78,7 +78,7 @@ def cputemperature( float_mode=() ):
 
 #Get IPv4
 def get_ipv4():
-    ipify_params = {'format':'json'}
+    ipify_params = {"format":"json"}
     iptest_params = "json"
     try:
         ipify4 = requests.get("https://api.ipify.org", params=ipify_params, timeout=2)
@@ -110,10 +110,10 @@ def get_ipv4():
 
 #Get IPv6
 def get_ipv6():
-    ipify_params = {'format':'json'}
+    ipify_params = {"format":"json"}
     iptest_params = "json"
     try:
-        ipify6 = requests.get("https://api6.ipify.org", params=ipify_params, timeout=2)
+        ipify6 = requests.get("https://api64.ipify.org/", params=ipify_params, timeout=2)
         if ipify6.status_code == 200:
             ipv6_json = json.loads(ipify6.text)
             ipify6.close()
