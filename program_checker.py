@@ -1,4 +1,5 @@
 #coding=utf-8
+import sys
 import automatically_report
 
 #Program checker
@@ -45,3 +46,4 @@ disalbe_phone_book = False
 #Running report
 program_checker(disalbe_phone_book)
 #END
+sys.exit(0)

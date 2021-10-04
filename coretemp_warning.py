@@ -1,4 +1,5 @@
 #coding=utf-8
+import sys
 import automatically_report
 
 #Core Temperature High Alert
@@ -45,3 +46,4 @@ disalbe_phone_book = False
 #Running report
 temp_warning(disalbe_phone_book)
 #END
+sys.exit(0)
