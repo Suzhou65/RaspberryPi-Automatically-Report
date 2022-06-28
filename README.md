@@ -108,7 +108,7 @@ If default address is empty, it will fill in when initialization.
   },
 ```
 ### Program or process checking
-If default address is empty, it will print error message when initialization, or return ```True``` as result.
+If default program name is empty, it will print error message when initialization, or return ```True``` as result and print message.
 ```text
 Query not found. Configuration is necessary.
 ```
@@ -120,7 +120,7 @@ Configure store at ```config.json```.
 ```
 
 ## Configuration file
-Status4HaH store configuration as JSON format file, named ```config.json.```.  
+Store configuration as JSON format file, named ```config.json.```.  
 You can editing the clean copy, which looks like this:
 ```json
 {
